@@ -24,7 +24,7 @@ endif()
 # Options
 ###########################################################################
 option(ENABLE_SYMBOL_HIDING "Hide internal symbols in the library." ON)
-option(ENABLE_DEP_SYMBOL_HIDING "Hide symbols provided by library dependencies." ON)
+option(ENABLE_DEP_SYMBOL_HIDING "Hide symbols provided by library dependencies." OFF)
 option(ENABLE_IPO "Using link-time optimization." ON)
 include(CheckIPOSupported)
 
@@ -159,7 +159,6 @@ target_link_libraries(pytest PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wl,--no-undefined>
         $<$<CXX_COMPILER_ID:Clang>:-Wl,--no-undefined>
         #$<$<CXX_COMPILER_ID:AppleClang>:-Wl,--no-undefined> # TODO: is there an equivalent?
-        $<$<CXX_COMPILER_ID:AppleClang>:-Wl,-keep_dwarf_unwind>
         )
 set_target_properties(pytest PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 target_compile_options(pytest PRIVATE -Wall -Wextra

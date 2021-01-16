@@ -21,9 +21,11 @@ jobs:
     - name: Build
       run: cd build && make -j 2 VERBOSE=1
     - name: Install
-      run: cd build && make install
+      run: cd build && make install VERBOSE=1
     - name: Print stuff
       run: |
         ls -R stage
+        otool -l stage/lib/libtest.dylib
+        otool -l stage/lib/pytest/libpytest.so
     - name: Run tests
       run: ./test.sh

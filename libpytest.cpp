@@ -61,4 +61,10 @@ BOOST_PYTHON_MODULE (libpytest) {
 //		exTypePy.attr("cause") = exPy;
 		PyErr_SetString(exType, ex.what());
 	});
+
+	py::register_exception_translator<std::exception>([](const std::exception &ex) {
+		DEBUG() << "wtf=" << ex.what() << std::endl;
+		DEBUG() << "typeid.name=" << typeid(ex).name() << std::endl;
+		throw ex;
+	});
 }

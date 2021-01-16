@@ -51,6 +51,7 @@ BOOST_PYTHON_MODULE (libpytest) {
 	//py::class_<LogicError>("LogicError_", py::no_init)
 	//		.def("getName", &LogicError::getName);
 	exType = exportException("LogicError");
+	DEBUG() << "chain before: " << py::detail::exception_handler::chain << std::endl;
 	py::register_exception_translator<LogicError>([](const LogicError &ex) {
 		DEBUG() << "ex=" << ex.getName() << "   " << ex.what() << std::endl;
 //		py::object exPy(ex); /* wrap the C++ exception */
@@ -61,10 +62,11 @@ BOOST_PYTHON_MODULE (libpytest) {
 //		exTypePy.attr("cause") = exPy;
 		PyErr_SetString(exType, ex.what());
 	});
+	DEBUG() << "chain after: " << py::detail::exception_handler::chain << std::endl;
 
-	py::register_exception_translator<std::exception>([](const std::exception &ex) {
-		DEBUG() << "wtf=" << ex.what() << std::endl;
-		DEBUG() << "typeid.name=" << typeid(ex).name() << std::endl;
-		throw ex;
-	});
+//	py::register_exception_translator<std::exception>([](const std::exception &ex) {
+//		DEBUG() << "wtf=" << ex.what() << std::endl;
+//		DEBUG() << "typeid.name=" << typeid(ex).name() << std::endl;
+//		throw ex;
+//	});
 }

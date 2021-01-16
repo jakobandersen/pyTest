@@ -25,10 +25,10 @@ std::ostream &operator<<(std::ostream &os, const py::object &o) {
 namespace {
 
 PyObject *exportException(const std::string &name) {
-	DEBUG() << "name=" << name << std::endl;
 	std::string scopeName = py::extract<std::string>(py::scope().attr("__name__"));
-	DEBUG() << "scopeName=" << scopeName << std::endl;
 	std::string qualifiedName = scopeName + "." + name;
+	DEBUG() << "name=" << name << std::endl;
+	DEBUG() << "scopeName=" << scopeName << std::endl;
 	DEBUG() << "qualifiedName=" << qualifiedName << std::endl;
 
 	PyObject * exType = PyErr_NewException(qualifiedName.c_str(), PyExc_Exception, 0);
@@ -40,16 +40,18 @@ PyObject *exportException(const std::string &name) {
 	return exType;
 }
 
-} // namespace
+PyObject *exType = nullptr;
 
+} // namespace
 
 BOOST_PYTHON_MODULE (libpytest) {
 	py::def("f", &f);
 
 	//ExportException(LogicError);
-	py::class_<LogicError>("LogicError_", py::no_init);
-	PyObject * exType = exportException("LogicError");
-	py::register_exception_translator<LogicError>([exType](const LogicError &ex) {
+	py::class_<LogicError>("LogicError_", py::no_init)
+			.def("getName", &LogicError::getName);
+	exType = exportException("LogicError");
+	py::register_exception_translator<LogicError>([](const LogicError &ex) {
 		DEBUG() << "ex=" << ex.getName() << "   " << ex.what() << std::endl;
 		py::object exPy(ex); /* wrap the C++ exception */
 		DEBUG() << "ex=" << exPy << std::endl;

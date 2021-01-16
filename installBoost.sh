@@ -25,4 +25,4 @@ cat project-config.jam
 echo "user-config.jam:::::::::::"
 cat user-config.jam
 
-sudo ./b2 -j 2 --with-python python=$pyver --user-config=user-config.jam  install
+sudo ./b2 -j 2 --with-python python=$pyver --user-config=user-config.jam  cxxstd=17 install

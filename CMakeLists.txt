@@ -79,7 +79,7 @@ if(NOT hasParent)
     # https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
     set(CMAKE_SKIP_BUILD_RPATH FALSE)                  # use RPATH in the build tree
     set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)          # but not the RPATH used in installation
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}:${CMAKE_INSTALL_FULL_LIBDIR}/pytest") # instead, add this one
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR};${CMAKE_INSTALL_FULL_LIBDIR}/pytest") # instead, add this one
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)        # in addition to those deduced automatically
 endif()
 

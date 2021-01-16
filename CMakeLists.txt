@@ -79,8 +79,10 @@ if(NOT hasParent)
     # https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
     set(CMAKE_SKIP_BUILD_RPATH FALSE)                  # use RPATH in the build tree
     set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)          # but not the RPATH used in installation
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR};${CMAKE_INSTALL_FULL_LIBDIR}/pytest") # instead, add this one
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)        # in addition to those deduced automatically
+    # use
+    # set_target_properties(theTarget PROPERTIES INSTALL_RPATH "theRPATH")
+    # on each target that needs it
 endif()
 
 
@@ -110,6 +112,7 @@ target_link_libraries(libtest PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wl,--disable-new-dtags>
         $<$<CXX_COMPILER_ID:Clang>:-Wl,--disable-new-dtags>
         )
+# on each target that needs it
 target_compile_options(libtest PRIVATE -Wall -Wextra
         -Wno-unused-parameter
         -Wno-comment
@@ -157,6 +160,7 @@ target_link_libraries(pytest PRIVATE
         $<$<CXX_COMPILER_ID:Clang>:-Wl,--no-undefined>
         #$<$<CXX_COMPILER_ID:AppleClang>:-Wl,--no-undefined> # TODO: is there an equivalent?
         )
+set_target_properties(pytest PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 target_compile_options(pytest PRIVATE -Wall -Wextra
         -Wno-unused-parameter
         -Wno-comment

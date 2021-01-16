@@ -1,0 +1,34 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  Ubuntu:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: 'recursive'
+    - name: Install apt dependencies
+      run: |
+        sudo apt install -y g++ cmake python3-dev
+    - name: Install Boost
+      run: |
+        wget https://dl.bintray.com/boostorg/release/1.74.0/source/boost_1_74_0.tar.gz
+        tar -xf boost_1_74_0.tar.gz
+        cd boost_1_74_0
+        ./bootstrap.sh --with-python=python3 --prefix=/opt/boost
+        ./b2 -j 2 --with-python install
+    - name: Configure
+      env:
+        CXXFLAGS: -Werror
+      run: |
+        mkdir build
+        cd build
+        cmake ../ -DBOOST_ROOT=/opt/boost -DCMAKE_INSTALL_PREFIX=../stage
+    - name: Build
+      run: cd build && make -j 2
+    - name: Install
+      run: cd build && make install
+    - name: Run tests
+      run: ./test.sh

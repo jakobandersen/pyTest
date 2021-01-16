@@ -1,0 +1,26 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  macOS:
+    runs-on: macos-10.15
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: 'recursive'
+    - name: Install Brew dependencies
+      run: |
+        brew install boost
+		brew install boost-python3
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake ../ -DBOOST_ROOT=/opt/boost -DCMAKE_INSTALL_PREFIX=../stage
+    - name: Build
+      run: cd build && make -j 2
+    - name: Install
+      run: cd build && make install
+    - name: Run tests
+      run: ./test.sh

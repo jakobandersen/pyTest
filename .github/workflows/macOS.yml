@@ -19,7 +19,7 @@ jobs:
         cd build
         cmake ../ -DBOOST_ROOT=/opt/boost -DCMAKE_INSTALL_PREFIX=../stage
     - name: Build
-      run: cd build && make -j 2
+      run: cd build && make -j 2 VERBOSE=1
     - name: Install
       run: cd build && make install
     - name: Print stuff

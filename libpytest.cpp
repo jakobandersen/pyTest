@@ -48,17 +48,17 @@ BOOST_PYTHON_MODULE (libpytest) {
 	py::def("f", &f);
 
 	//ExportException(LogicError);
-	py::class_<LogicError>("LogicError_", py::no_init)
-			.def("getName", &LogicError::getName);
+	//py::class_<LogicError>("LogicError_", py::no_init)
+	//		.def("getName", &LogicError::getName);
 	exType = exportException("LogicError");
 	py::register_exception_translator<LogicError>([](const LogicError &ex) {
 		DEBUG() << "ex=" << ex.getName() << "   " << ex.what() << std::endl;
-		py::object exPy(ex); /* wrap the C++ exception */
-		DEBUG() << "ex=" << exPy << std::endl;
+//		py::object exPy(ex); /* wrap the C++ exception */
+//		DEBUG() << "ex=" << exPy << std::endl;
 		py::object exTypePy(py::handle<>(py::borrowed(exType)));
 		DEBUG() << "exTypePy=" << exTypePy << std::endl;
 		/* add the wrapped exception to the Python exception */
-		exTypePy.attr("cause") = exPy;
+//		exTypePy.attr("cause") = exPy;
 		PyErr_SetString(exType, ex.what());
 	});
 }

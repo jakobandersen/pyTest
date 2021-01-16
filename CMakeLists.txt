@@ -159,6 +159,7 @@ target_link_libraries(pytest PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wl,--no-undefined>
         $<$<CXX_COMPILER_ID:Clang>:-Wl,--no-undefined>
         #$<$<CXX_COMPILER_ID:AppleClang>:-Wl,--no-undefined> # TODO: is there an equivalent?
+        $<$<CXX_COMPILER_ID:AppleClang>:-Wl,-keep_dwarf_unwind>
         )
 set_target_properties(pytest PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 target_compile_options(pytest PRIVATE -Wall -Wextra

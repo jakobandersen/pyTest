@@ -24,7 +24,7 @@ endif()
 # Options
 ###########################################################################
 option(ENABLE_SYMBOL_HIDING "Hide internal symbols in the library." OFF)
-option(ENABLE_DEP_SYMBOL_HIDING "Hide symbols provided by library dependencies." ON)
+option(ENABLE_DEP_SYMBOL_HIDING "Hide symbols provided by library dependencies." OFF)
 option(ENABLE_IPO "Using link-time optimization." ON)
 include(CheckIPOSupported)
 

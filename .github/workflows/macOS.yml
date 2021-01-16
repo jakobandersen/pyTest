@@ -22,5 +22,8 @@ jobs:
       run: cd build && make -j 2
     - name: Install
       run: cd build && make install
+    - name: Print stuff
+      run: |
+        ls -R stage
     - name: Run tests
       run: ./test.sh

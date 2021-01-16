@@ -4,7 +4,7 @@ wget https://dl.bintray.com/boostorg/release/1.74.0/source/boost_1_74_0.tar.gz
 tar -xf boost_1_74_0.tar.gz
 cd boost_1_74_0
 
-sed -i "s/using python/#using python/" bootstrap.sh
+sed -i".orig" "s/using python/#using python/" bootstrap.sh
 
 pyver=$(python3 -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]), end="")')
 pyprefix=$(python3 -c 'import sys; print(sys.prefix, end="")')

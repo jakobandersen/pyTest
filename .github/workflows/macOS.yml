@@ -12,7 +12,7 @@ jobs:
     - name: Install Brew dependencies
       run: |
         brew install boost
-		brew install boost-python3
+        brew install boost-python3
     - name: Configure
       run: |
         mkdir build

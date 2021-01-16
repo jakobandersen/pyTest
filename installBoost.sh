@@ -18,7 +18,7 @@ echo "             : python3" >> user-config.jam
 echo "             : $pyprefix/include/python$pyver" >> user-config.jam
 echo "             : $pyprefix/lib ;" >> user-config.jam
 
-./bootstrap.sh --with-libraries=python --with-python=python3 --prefix=/opt/boost
+./bootstrap.sh --with-libraries=python --with-python=python3 --with-python-root=$pyprefix --prefix=/opt/boost
 
 echo "project-config.jam::::::::"
 cat project-config.jam

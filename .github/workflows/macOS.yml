@@ -9,12 +9,15 @@ jobs:
       with:
         fetch-depth: 0
         submodules: 'recursive'
+    - name: Install Python
+      run: brew install python
     - name: Install Boost
       run: |
         wget https://dl.bintray.com/boostorg/release/1.74.0/source/boost_1_74_0.tar.gz
         tar -xf boost_1_74_0.tar.gz
         cd boost_1_74_0
         ./bootstrap.sh --with-python=python3 --prefix=/opt/boost
+        cat project-config.jam
         sudo ./b2 -j 2 --with-python install
     - name: Configure
       run: |

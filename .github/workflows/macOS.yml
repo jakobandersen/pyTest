@@ -30,7 +30,11 @@ jobs:
       run: otool -l stage/lib/pytest/libpytest.so
     - name: nm libtest
       run: nm -C stage/lib/libtest.dylib
+    - name: nm -D libtest
+      run: nm -D -C stage/lib/libtest.dylib
     - name: nm libpytest
       run: nm -C stage/lib/pytest/libpytest.so
+    - name: nm -D libpytest
+      run: nm -D -C stage/lib/pytest/libpytest.so
     - name: Run tests
       run: ./test.sh

@@ -16,7 +16,7 @@
 LIB_DECL void f();
 
 
-struct LIB_DECL Exception : public std::exception {
+struct BOOST_SYMBOL_VISIBLE Exception : public std::exception {
 protected:
 	Exception(std::string &&text) : text(text) {}
 public:
@@ -27,7 +27,7 @@ protected:
 	mutable std::string whatString; // is set by the what function
 };
 
-struct LIB_DECL LogicError : public Exception {
+struct BOOST_SYMBOL_VISIBLE LogicError : public Exception {
 	LogicError(std::string &&text) : Exception(std::move(text)) {}
 
 	std::string getName() const {

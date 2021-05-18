@@ -13,26 +13,7 @@
 #	define LIB_DECL BOOST_SYMBOL_IMPORT
 #endif
 
-LIB_DECL void f();
 
 
-struct BOOST_SYMBOL_VISIBLE Exception : public std::exception {
-protected:
-	Exception(std::string &&text) : text(text) {}
-public:
-	virtual std::string getName() const = 0;
-	virtual const char *what() const noexcept;
-protected:
-	std::string text;
-	mutable std::string whatString; // is set by the what function
-};
-
-struct BOOST_SYMBOL_VISIBLE LogicError : public Exception {
-	LogicError(std::string &&text) : Exception(std::move(text)) {}
-
-	std::string getName() const {
-		return "LogicError";
-	}
-};
 
 #endif // LIBTEST_HPP

@@ -42,27 +42,13 @@ endif()
 
 # Boost
 # -------------------------------------------------------------------------
-set(v 1.73.0)
-foreach(PY 3 34 35 36 37 38 39)
-    set(lib "python${PY}")
-    find_package(Boost ${v} QUIET COMPONENTS ${lib})
-    if(Boost_FOUND)
-        find_package(Boost ${v} COMPONENTS ${lib})
-        set(PYTHON_TARGET ${lib})
-        break()
-    endif()
-endforeach()
-if(NOT Boost_FOUND)
-    find_package(Boost ${v} REQUIRED COMPONENTS python3)
-    message(FATAL_ERROR "Could not find Boost.Python for Python 3. Tried 'python' wih suffixes 3, 34, 35, 36, 37, 38, and 39.")
-endif()
-message(STATUS "(Boost include dir is ${Boost_INCLUDE_DIRS})")
-
+find_package(Boost)
 
 # Python
 # -------------------------------------------------------------------------
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-
+message(STATUS "pybind11: using external/pybind11")
+add_subdirectory(external/pybind11)
 
 # Threads
 # -------------------------------------------------------------------------
@@ -94,6 +80,7 @@ target_include_directories(libtest
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>)
+target_link_libraries(libtest PUBLIC Boost::headers)
 if(ENABLE_DEP_SYMBOL_HIDING)
     target_link_libraries(libtest PRIVATE
             $<$<CXX_COMPILER_ID:GNU>:-Wl,--exclude-libs,ALL>
@@ -101,7 +88,7 @@ if(ENABLE_DEP_SYMBOL_HIDING)
             #$<$<CXX_COMPILER_ID:AppleClang>:-Wl,--exclude-libs,ALL> # TODO: is a an equivalent?
             )
 endif()
-target_link_libraries(libtest PRIVATE Boost::headers Threads::Threads)
+target_link_libraries(libtest PRIVATE Threads::Threads)
 target_link_libraries(libtest PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wl,--no-undefined>
         $<$<CXX_COMPILER_ID:Clang>:-Wl,--no-undefined>
@@ -149,41 +136,31 @@ install(TARGETS libtest
 
 # libpytest
 # -------------------------------------------------------------------------
-add_library(pytest MODULE libpytest.cpp)
-target_include_directories(pytest
+pybind11_add_module(libpytest MODULE libpytest.cpp)
+target_include_directories(libpytest
         PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(pytest PUBLIC libtest Boost::${PYTHON_TARGET} Python3::Python)
-target_link_libraries(pytest PRIVATE
-        $<$<CXX_COMPILER_ID:GNU>:-Wl,--no-undefined>
-        $<$<CXX_COMPILER_ID:Clang>:-Wl,--no-undefined>
-        #$<$<CXX_COMPILER_ID:AppleClang>:-Wl,--no-undefined> # TODO: is there an equivalent?
-        )
-set_target_properties(pytest PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
-target_compile_options(pytest PRIVATE -Wall -Wextra
+target_link_libraries(libpytest PUBLIC libtest)
+set_target_properties(libpytest PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
+target_compile_options(libpytest PRIVATE -Wall -Wextra
         -Wno-unused-parameter
         -Wno-comment
         -Wno-unused-local-typedefs)
-set_target_properties(pytest PROPERTIES
+set_target_properties(libpytest PROPERTIES
         CXX_VISIBILITY_PRESET hidden
         VISIBILITY_INLINES_HIDDEN ON)
-target_compile_definitions(pytest PRIVATE PY_SOURCE)
-if(ENABLE_IPO)
-    check_ipo_supported(RESULT result OUTPUT output)
-    if(result)
-        set_property(TARGET pytest PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-    else()
-        message(FATAL_ERROR "Interprocedural optimization was requested ('ENABLE_IPO=on'), but it is not supported: ${output}")
-    endif()
+target_compile_definitions(libpytest PRIVATE PY_SOURCE)
+if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+    target_link_libraries(libpymod PRIVATE pybind11::lto)
 endif()
 
-install(TARGETS pytest
+install(TARGETS libpytest
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/pytest
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/pytest
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # module files
-install(DIRECTORY lib/pytest
+install(DIRECTORY lib/libpytest
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         FILES_MATCHING PATTERN "*.py" PATTERN "*.pyi")

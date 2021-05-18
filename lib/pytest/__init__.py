@@ -1,3 +1,4 @@
+print("pytest.__init__.py: begin")
 import ctypes
 import sys
 
@@ -18,4 +19,4 @@ class _Unbuffered:
 		return getattr(self.stream, attr)
 sys.stdout = _Unbuffered(sys.stdout)  # type: ignore
 
-print("pytest.__init__.py")
+print("pytest.__init__.py: end")

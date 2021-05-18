@@ -147,10 +147,9 @@ target_compile_options(libpytest PRIVATE -Wall -Wextra
         -Wno-unused-parameter
         -Wno-comment
         -Wno-unused-local-typedefs)
-set_target_properties(libpytest PROPERTIES
-        CXX_VISIBILITY_PRESET hidden
-        VISIBILITY_INLINES_HIDDEN ON)
-target_compile_definitions(libpytest PRIVATE PY_SOURCE)
+target_compile_definitions(libpytest PRIVATE
+        PY_SOURCE
+        PYBIND11_USE_SMART_HOLDER_AS_DEFAULT)
 if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
     target_link_libraries(libpymod PRIVATE pybind11::lto)
 endif()
@@ -161,6 +160,6 @@ install(TARGETS libpytest
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # module files
-install(DIRECTORY lib/libpytest
+install(DIRECTORY lib/pytest
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         FILES_MATCHING PATTERN "*.py" PATTERN "*.pyi")

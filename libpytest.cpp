@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include <pybind11/cast.h>
 
 #include <libtest.hpp>
 
@@ -39,13 +40,28 @@ struct FunctionWrapper<R(Args...)> : Function<R(Args...)> {
 	}
 
 	R operator()(Args ...args) const override {
-		PYBIND11_OVERRIDE_PURE_NAME(
-				R,
-				Function<R(Args...)>,
-				"__call__",
-				operator(),
-				args...
-		);
+		// Initial
+		//		PYBIND11_OVERRIDE_PURE_NAME(
+		//				R,
+		//				Function<R(Args...)>,
+		//				"__call__",
+		//				operator(),
+		//				args...
+		//		);
+		// Expansion 1
+		//		PYBIND11_OVERRIDE_IMPL(PYBIND11_TYPE(R), Function<R(Args...)>, "__call__", args...);
+		//		pybind11::pybind11_fail("Tried to call pure virtual function \"" "Function<R(Args...)>" "::" "__call__" "\"");
+		// Expansion 2
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function override = pybind11::get_override(static_cast<const Function<R(Args...)> *>(this), "__call__");
+		if(override) {
+			auto o = override.operator()<py::return_value_policy::automatic>(args...); // <<<<<<<<<<<
+			if(pybind11::detail::cast_is_temporary_value_reference<R>::value) {
+				static pybind11::detail::override_caster_t<R> caster;
+				return pybind11::detail::cast_ref<R>(std::move(o), caster);
+			} else return pybind11::detail::cast_safe<R>(std::move(o));
+		}
+		pybind11::pybind11_fail("Tried to call pure virtual function \"" "Function<R(Args...)>" "::" "__call__" "\"");
 	}
 };
 
@@ -67,7 +83,7 @@ PYBIND11_MODULE(libpytest, m) {
 	std::cout << "PYBIND11_MODULE(libpytest, m)" << std::endl;
 
 	py::class_<C>(m, "C")
-	      .def_readwrite("data", &C::data);
+			.def_readwrite("data", &C::data);
 	m.def("makeC", &C::make);
 
 	exportFunc<int(std::shared_ptr<C>)>(m, "Function");
